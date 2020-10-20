@@ -1,6 +1,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
-from entries import get_all_entries, get_single_entry
+from entries import get_all_entries, get_single_entry, delete_entry, search_for_entry
+from Moods import get_all_moods, get_single_mood, delete_mood
 
 class HandleRequests(BaseHTTPRequestHandler):
 
@@ -25,6 +26,12 @@ class HandleRequests(BaseHTTPRequestHandler):
                     response = f"{get_single_entry(id)}"
                 else:
                     response = f"{get_all_entries()}"
+
+            elif resource == "moods":
+                if id is not None:
+                    response = f"{get_single_mood(id)}"
+                else:
+                    response = f"{get_all_moods()}"   
 
         self.wfile.write(response.encode())
 
@@ -53,6 +60,19 @@ class HandleRequests(BaseHTTPRequestHandler):
                 pass  
 
             return (resource, id)
+
+    def do_DELETE(self):
+        self._set_headers(204)
+
+        (resource, id) = self.parse_url(self.path)
+
+        if resource == "entries":
+            delete_entry(id)
+        elif resource == "moods":
+            delete_mood(id)
+
+
+        self.wfile.write("".encode())
 
 def main(): 
     host = ''
