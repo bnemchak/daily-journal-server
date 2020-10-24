@@ -96,3 +96,20 @@ def delete_entry(id):
         DELETE FROM Journal_entries
         WHERE id = ?
         """, (id, ))
+
+def create_journal_entry(new_object):
+    with sqlite3.connect('./daily-journal.db') as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        INSERT INTO Journal_entries
+            ( concept, entry, mood_id, date )
+        VALUES
+            (?, ?, ?, ?)
+        """, (new_object['concept'], new_object['entry'], new_object['mood_id]'], new_object['date'], ))
+
+        id = db_cursor.lastrowid
+
+        new_object['id'] = id
+
+    return json.dumps(new_object)
